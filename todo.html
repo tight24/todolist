@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ToDoリスト</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+</head>
+<body>
+  <div id="app">
+    <h1>ToDo リスト</h1>
+    <label>ジャンル</label>
+    <select v-model="selectedGenre">
+      <option v-for="genre in genres" :value="genre">{{genre}}</option>
+    </select>
+    <br><br>
+    <label>タスク</label>
+    <textarea v-model="task"></textarea>
+    <br><br>
+    <input type="radio" name="priority" value="normal" checked>Normal
+    <input type="radio" name="priority" value="important" @change="isActive=true">Important
+    <br><br>
+    <button @click="addTask" :class="{inActive:isBlank}">追加</button>
+    <hr>
+    <task-component
+      v-for="(task,index) in taskList"
+      :task-name="task.taskName"
+      :date="task.date"
+      :genre="task.genre"
+      :index="index"
+    ></task-component>
+  </div>
+
+
+  <script>
+    Vue.component('task-component',{
+      props:['taskName','date','genre','index','isActive'],
+      template:`
+        <div :class="{toRed:isActive, taskarea:!isActive}">
+          <div :class="{'completed':isCompleted}">
+            ジャンル：{{genre}}
+            <br>タスク：{{taskName}}
+            <br>投稿日時：{{date}}
+          </div>
+          <br><button @click="deleteTask(index)">削除</button>
+          <button @click="isCompleted=true">完了</button>
+          <button @click="isCompleted=false">完了取消</button>
+        </div>
+      `,
+      data:function(){
+        return {
+          isCompleted:''
+        }
+      },
+      methods:{
+        deleteTask:function(index){
+          return this.$root.taskList.splice(index,1)
+        }
+      }
+    })
+
+    new Vue({
+      el:'#app',
+      data:{
+        genres:[
+          "一般課題",
+          "専門課題",
+          "プライベート",
+
+        ],
+        task:'',
+        selectedGenre:'',
+        taskList:[],
+        priority:'',
+        isActive:''
+      },
+      computed:{
+        isBlank:function(){
+          return this.task==="" || this.selectedGenre===""
+        }
+      },
+      methods:{
+        //ボタンクリック時にtaskListに格納
+        addTask:function(){
+          const day=new Date();
+
+          this.taskList.push({
+            'taskName':this.task,
+            'genre':this.selectedGenre,
+            'date': day.toLocaleString('ja-JP')
+          });
+          //追加後のタスク内のコメントを空にする
+          this.task="";
+          this.selectedGenre="";
+        }
+
+      }
+
+    })
+  </script>
+
+  <style>
+    .inActive {
+      pointer-events: none;
+      color: gray;
+    }
+
+    .taskarea {
+      margin-left: 10px;
+      margin-bottom: 10px;
+      background-color:#fafad2;
+      padding: 10px 10px 10px 10px;
+    }
+
+    .toRed {
+      margin-left: 10px;
+      margin-bottom: 10px;
+      background-color:#ff0000;
+      padding: 10px 10px 10px 10px;
+    }
+
+
+    .completed{
+      text-decoration: line-through;
+    }
+  </style>
+</body>
+</html>
