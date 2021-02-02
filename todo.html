@@ -18,7 +18,7 @@
     <textarea v-model="task"></textarea>
     <br><br>
     <input type="radio" name="priority" value="normal" checked>Normal
-    <input type="radio" name="priority" value="important" @change="isActive=true">Important
+    <input type="radio" name="priority" value="important" @change="clicked">Important
     <br><br>
     <button @click="addTask" :class="{inActive:isBlank}">追加</button>
     <hr>
@@ -34,9 +34,9 @@
 
   <script>
     Vue.component('task-component',{
-      props:['taskName','date','genre','index','isActive'],
+      props:['taskName','date','genre','index'],
       template:`
-        <div :class="{toRed:isActive, taskarea:!isActive}">
+        <div :class="{toRed:!isActive, taskarea:isActive}">
           <div :class="{'completed':isCompleted}">
             ジャンル：{{genre}}
             <br>タスク：{{taskName}}
@@ -73,6 +73,7 @@
         taskList:[],
         priority:'',
         isActive:''
+
       },
       computed:{
         isBlank:function(){
@@ -92,9 +93,14 @@
           //追加後のタスク内のコメントを空にする
           this.task="";
           this.selectedGenre="";
+        },
+        clicked:function(){
+          isActive:true
         }
-
       }
+
+
+
 
     })
   </script>
@@ -115,7 +121,7 @@
     .toRed {
       margin-left: 10px;
       margin-bottom: 10px;
-      background-color:#ff0000;
+      background-color:hsl(0, 59%, 53%);
       padding: 10px 10px 10px 10px;
     }
 
